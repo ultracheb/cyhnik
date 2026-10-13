@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="be">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Цягнік</title>
+<meta name="theme-color" content="#0f1720">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Цягнік">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231d6fd8'/%3E%3Crect x='16' y='12' width='32' height='34' rx='8' fill='white'/%3E%3Crect x='21' y='18' width='22' height='11' rx='2' fill='%231d6fd8'/%3E%3Ccircle cx='24' cy='38' r='3' fill='%231d6fd8'/%3E%3Ccircle cx='40' cy='38' r='3' fill='%231d6fd8'/%3E%3Cpath d='M20 54l6-8M44 54l-6-8' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f3f5f8; --card:#ffffff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb;
+  --accent:#1d6fd8; --accent-ink:#ffffff; --late:#d92d20; --late-bg:#fdecea; --ok:#12805c;
+  --chip:#eef2f7; --chip-on:#1d6fd8; --plat-bg:#111827; --plat-ink:#ffd34d;
+  --s-line:#1d6fd8; --r-line:#7c3aed; --x-line:#b42318;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b1118; --card:#141c26; --ink:#e8edf3; --muted:#8b98a8; --line:#223041;
+    --accent:#4c9bff; --accent-ink:#06121f; --late:#ff6b5e; --late-bg:#3a1714; --ok:#3fcf95;
+    --chip:#1b2633; --chip-on:#4c9bff; --plat-bg:#000; --plat-ink:#ffd34d;
+    --s-line:#4c9bff; --r-line:#a78bfa; --x-line:#ff7a6b;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1118; --card:#141c26; --ink:#e8edf3; --muted:#8b98a8; --line:#223041;
+  --accent:#4c9bff; --accent-ink:#06121f; --late:#ff6b5e; --late-bg:#3a1714; --ok:#3fcf95;
+  --chip:#1b2633; --chip-on:#4c9bff; --plat-bg:#000; --plat-ink:#ffd34d;
+  --s-line:#4c9bff; --r-line:#a78bfa; --x-line:#ff7a6b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px calc(24px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(10px + env(safe-area-inset-top)) 0 8px}
+.top{display:flex;align-items:center;gap:10px}
+h1{font-size:20px;margin:0;font-weight:750;letter-spacing:-.01em}
+.upd{color:var(--muted);font-size:12px;margin-left:auto;text-align:right}
+.btn{border:0;background:var(--chip);color:var(--ink);border-radius:10px;height:36px;min-width:36px;padding:0 10px;font:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.btn svg{width:18px;height:18px}
+.btn.spin svg{animation:spin 0.9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--chip);padding:4px;border-radius:12px;margin-top:10px}
+.tab{border:0;background:transparent;color:var(--muted);font:600 15px system-ui,sans-serif;padding:9px 6px;border-radius:9px;cursor:pointer}
+.tab.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
+.chips .br{flex-basis:100%;height:0}
+.chips .lbl{min-width:52px;font-size:12px;color:var(--muted);margin-right:2px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:5px 11px;font:500 13px system-ui,sans-serif;cursor:pointer}
+.chip.on{background:var(--chip-on);border-color:var(--chip-on);color:var(--accent-ink)}
+.list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 12px;display:grid;grid-template-columns:1fr auto;gap:4px 10px}
+.card.gone{opacity:.5}
+.row1{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.time{font:700 24px/1 ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.time.struck{font-size:15px;color:var(--muted);text-decoration:line-through;font-weight:500}
+.time.late{color:var(--late)}
+.delay{background:var(--late-bg);color:var(--late);font-weight:700;font-size:12px;padding:2px 6px;border-radius:6px}
+.in{color:var(--muted);font-size:13px}
+.in b{color:var(--ink)}
+.in.soon b{color:var(--ok)}
+.plat{grid-row:1 / span 3;grid-column:2;align-self:start;text-align:center;background:var(--plat-bg);color:var(--plat-ink);border-radius:10px;min-width:52px;padding:5px 6px 6px}
+.plat small{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#cfd6df;opacity:.8}
+.plat span{font:800 22px/1.05 ui-monospace,Menlo,Consolas,monospace}
+.plat.none span{color:#8b98a8}
+.train{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.line{color:#fff;font-weight:700;font-size:12px;padding:1px 6px;border-radius:5px;background:var(--r-line)}
+.line.S{background:var(--s-line)} .line.X{background:var(--x-line)}
+.num{font-weight:650;color:var(--ink)}
+.dest{grid-column:1 / span 2;font-size:14px}
+.dest b{font-weight:650}
+.via{color:var(--muted);font-size:12px;margin-top:1px}
+.arr{grid-column:1 / span 2;display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;border-top:1px dashed var(--line);padding-top:6px;margin-top:3px}
+.arr .tag{font-weight:650}
+.arr .m{color:var(--muted)}
+.from{display:inline-block;font-size:12px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--chip);color:var(--ink)}
+.empty,.err{color:var(--muted);text-align:center;padding:28px 10px}
+.err{color:var(--late)}
+.warn{background:var(--late-bg);color:var(--late);border-radius:10px;padding:8px 10px;font-size:13px;margin-top:8px}
+details.notes{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13px}
+details.notes summary{cursor:pointer;color:var(--muted);font-weight:600}
+details.notes p{margin:8px 0 0}
+details.notes p b{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+footer{margin-top:16px;color:var(--muted);font-size:12px;text-align:center}
+footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="top">
+      <h1>Цягнік</h1>
+      <div class="upd" id="upd">—</div>
+      <button class="btn" id="refresh" aria-label="Абнавіць"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" data-tab="work" role="tab">З дому</button>
+      <button class="tab" data-tab="home" role="tab">Дадому</button>
+    </div>
+    <div class="chips" id="chips"></div>
+  </header>
+  <div id="warn"></div>
+  <div class="list" id="list"><div class="empty">Загружаю…</div></div>
+  <div id="notes"></div>
+  <footer>Даныя: <a href="https://provoz.spravazeleznic.cz/tabule/" target="_blank" rel="noopener">табло Správy železnic</a> · абнаўляецца кожныя 30 с</footer>
+</div>
+
+<script>
+// ===== Налады =====
+// URL Cloudflare Worker-праксі (гл. worker.js). Можна часова падмяніць праз ?proxy=...
+const PROXY = new URLSearchParams(location.search).get('proxy') || 'https://cyhnik.needforgrib.workers.dev/';
+const REFRESH_MS = 30000;
+
+const ST = {
+  lib: { key: 3471, short: 'Libeň',      full: 'Praha-Libeň',          re: /Praha-Libeň/i },
+  vys: { key: 3489, short: 'Vysočany',   full: 'Praha-Vysočany',       re: /Praha-Vysočany/i },
+  hl:  { key: 3444, short: 'hl.n.',      full: 'Praha hl.n.',          re: /Praha hl\.\s?n|Praha hlavní/i },
+  mas: { key: 3449, short: 'Masarykovo', full: 'Praha Masarykovo n.',  re: /Masaryk/i },
+  hol: { key: 3460, short: 'Holešovice', full: 'Praha-Holešovice',     re: /Praha-Holešovice(?!\s*zast)/i },
+};
+// work = з дому (Libeň → цэнтр), home = дадому (цэнтр → Libeň/Vysočany)
+const TABS = {
+  work: { from: ['lib'], to: ['hl', 'mas', 'hol'] },
+  home: { from: ['hl', 'mas', 'hol'], to: ['lib', 'vys'] },
+};
+
+// ===== Стан =====
+const store = {
+  get(k, d){ try { const v = localStorage.getItem('cyh_' + k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem('cyh_' + k, JSON.stringify(v)); } catch(e){} },
+};
+let tab = new Date().getHours() < 13 ? 'work' : 'home';
+let off = store.get('off', {});             // {tab: {stationId: true}} — выключаныя чыпы
+let lastData = { work: null, home: null };
+let lastAt = { work: 0, home: 0 };
+let loading = false;
+
+// ===== Час =====
+function nowMin(){
+  const p = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Prague', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(new Date());
+  const g = t => +p.find(x => x.type === t).value;
+  return (g('hour') % 24) * 60 + g('minute') + g('second') / 60;
+}
+const toMin = s => { const m = /(\d{1,2}):(\d{2})/.exec(s || ''); return m ? (+m[1]) * 60 + (+m[2]) : null; };
+// адносна "цяпер", з улікам пераходу праз поўнач
+function rel(t, base){
+  if (t == null) return null;
+  let d = t - base;
+  while (d < -720) d += 1440;
+  while (d > 720) d -= 1440;
+  return d;
+}
+
+// ===== Загрузка і парсінг табло =====
+function boardUrl(key, arr){
+  if (location.hostname === 'provoz.spravazeleznic.cz')
+    return '/tabule/Pages/StationTable.aspx?Key=' + key + (arr ? '&Arr=1' : '');
+  return PROXY + '?key=' + key + (arr ? '&arr=1' : '');
+}
+const cache = new Map();
+async function loadBoard(key, arr){
+  const id = key + (arr ? 'a' : 'd');
+  const c = cache.get(id);
+  if (c && Date.now() - c.at < 15000) return c.data;
+  const r = await fetch(boardUrl(key, arr), { cache: 'no-store', credentials: 'omit' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const data = parseBoard(await r.text());
+  cache.set(id, { at: Date.now(), data });
+  return data;
+}
+
+const leafTexts = el => [...el.querySelectorAll('div,span')].filter(x => !x.children.length).map(x => x.textContent.trim()).filter(Boolean);
+const clean = s => (s || '').replace(/\s+/g, ' ').trim();
+const dash = s => (!s || /^[–-]$/.test(s)) ? '' : s;
+
+function parseBoard(html){
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const table = doc.querySelector('table');
+  if (!table) throw new Error('няма табліцы');
+  const desk = el => !/hidden-md/.test(el.className);   // бярэм "дэсктопныя" калонкі
+  const headTr = [...table.querySelectorAll('tr')].find(tr => tr.querySelector('th'));
+  const heads = headTr ? [...headTr.querySelectorAll('th')].filter(desk).map(th => clean(th.textContent).toLowerCase()) : [];
+  const col = (...names) => heads.findIndex(h => names.some(n => h.startsWith(n)));
+  const C = {
+    plan: col('pravideln'), act: col('aktuáln'), train: col('vlak'), line: col('linka'),
+    dest: col('cíl'), from: col('ze směru', 'ze stanice', 'odkud'), via: col('přes'), plat: col('nástupišt', 'kolej'),
+  };
+  const rows = [], notes = [];
+  for (const tr of table.querySelectorAll('tr')){
+    if (tr === headTr || tr.querySelector('th')) continue;
+    if (/tableTextRow/.test(tr.className)){
+      const td = tr.querySelector('td');
+      const t = td && clean(td.textContent);
+      if (t && !notes.includes(t)) notes.push(t);
+      continue;
+    }
+    const tds = [...tr.children].filter(td => td.tagName === 'TD' && desk(td));
+    if (!tds.length) continue;
+    const cell = i => i >= 0 && tds[i] ? tds[i] : null;
+    const txt = i => { const c = cell(i); return c ? clean(c.textContent) : ''; };
+    const trainBits = cell(C.train) ? leafTexts(cell(C.train)) : [];
+    const number = trainBits[0] || txt(C.train);
+    const r = {
+      plan: txt(C.plan), act: dash(txt(C.act)),
+      number, carrier: trainBits[1] || '',
+      id: (number.match(/\d+/) || [''])[0],
+      line: dash(txt(C.line)),
+      dest: txt(C.dest), from: txt(C.from),
+      via: dash(txt(C.via)),
+      plat: dash(txt(C.plat)),
+      extra: tds.filter((_, i) => !Object.values(C).includes(i)).map(td => clean(td.textContent)).filter(t => t && !/^[–-]$/.test(t)),
+    };
+    if (toMin(r.plan) == null) continue;
+    rows.push(r);
+  }
+  return { rows, notes };
+}
+
+// ===== Агрэгацыя =====
+async function collect(tabId){
+  const cfg = TABS[tabId];
+  const errors = [];
+  const safe = (p, label) => p.catch(e => { errors.push(label + ': ' + e.message); return null; });
+  const deps = await Promise.all(cfg.from.map(s => safe(loadBoard(ST[s].key, false), ST[s].full + ' (адпраўленні)')));
+  const arrs = await Promise.all(cfg.to.map(s => safe(loadBoard(ST[s].key, true), ST[s].full + ' (прыбыцці)')));
+  const arrIdx = {};
+  cfg.to.forEach((s, i) => { arrIdx[s] = new Map(); (arrs[i]?.rows || []).forEach(r => r.id && arrIdx[s].set(r.id, r)); });
+
+  const items = [];
+  cfg.from.forEach((fromId, i) => {
+    const b = deps[i]; if (!b) return;
+    for (const r of b.rows){
+      const hay = r.dest + ' — ' + r.via;
+      const hits = [];
+      for (const toId of cfg.to){
+        if (toId === fromId) continue;
+        let a = r.id && arrIdx[toId].get(r.id);
+        // прыбыццё мусіць быць пасля адпраўлення (інакш гэта той жа нумар, але другі кірунак)
+        if (a){ const dt = ((toMin(a.plan) - toMin(r.plan)) % 1440 + 1440) % 1440; if (!(dt > 0 && dt <= 180)) a = null; }
+        if (a || ST[toId].re.test(hay)) hits.push({ to: toId, arr: a || null });
+      }
+      if (hits.length) items.push({ from: fromId, r, hits });
+    }
+  });
+  const notes = [];
+  [...cfg.from.map((s, i) => [s, deps[i]]), ...cfg.to.map((s, i) => [s, arrs[i]])].forEach(([s, b]) => {
+    (b?.notes || []).forEach(n => { if (!notes.some(x => x.text === n)) notes.push({ st: s, text: n }); });
+  });
+  return { items, notes, errors, at: Date.now() };
+}
+
+// ===== Рэндэр =====
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function lineClass(r){
+  const l = r.line || '', n = r.number || '';
+  if (/^S/i.test(l)) return 'S';
+  if (/^(Ex|EC|IC|rj|RJ|SC|LE|EN|nj|RJX|ICE)/i.test(l + ' ' + n) || /^Ex/i.test(l)) return 'X';
+  return '';
+}
+function fmtIn(d){
+  if (d == null) return '';
+  if (d < 0.5) return '<span class="in soon"><b>зараз</b></span>';
+  const m = Math.round(d);
+  if (m < 60) return `<span class="in${m <= 5 ? ' soon' : ''}">праз <b>${m} хв</b></span>`;
+  return `<span class="in">праз <b>${Math.floor(m / 60)} г ${m % 60} хв</b></span>`;
+}
+
+function render(){
+  // табы
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  const cfg = TABS[tab];
+  const offT = off[tab] || {};
+  const chipStations = tab === 'work' ? cfg.to : cfg.from;
+  const chipLbl = tab === 'work' ? 'Куды:' : 'Адкуль:';
+  let chips = `<span class="lbl">${chipLbl}</span>` + chipStations.map(s => `<button class="chip${offT[s] ? '' : ' on'}" data-st="${s}">${ST[s].short}</button>`).join('');
+  if (tab === 'home'){
+    chips += `<span class="br"></span><span class="lbl">Куды:</span>` + cfg.to.map(s => `<button class="chip${offT[s] ? '' : ' on'}" data-st="${s}">${ST[s].short}</button>`).join('');
+  }
+  $('#chips').innerHTML = chips;
+
+  const data = lastData[tab];
+  if (!data){ $('#list').innerHTML = '<div class="empty">Загружаю…</div>'; $('#notes').innerHTML = ''; $('#warn').innerHTML = ''; return; }
+
+  $('#warn').innerHTML = data.errors.length ? `<div class="warn">Не атрымалася загрузіць: ${data.errors.map(esc).join('; ')}</div>` : '';
+
+  const base = nowMin();
+  const rows = [];
+  for (const it of data.items){
+    if (offT[it.from]) continue;
+    const hits = it.hits.filter(h => !offT[h.to]);
+    if (!hits.length) continue;
+    const p = toMin(it.r.plan), a = toMin(it.r.act);
+    const dp = rel(p, base);
+    let da = a != null ? rel(a, base) : null;
+    if (da != null && da < dp - 1) da += 1440;      // фактычны час пасля поўначы
+    const eff = da != null ? da : dp;
+    if (eff < -1) continue;
+    const delay = da != null ? Math.round(da - dp) : 0;
+    rows.push({ ...it, hits, dp, da, eff, delay });
+  }
+  rows.sort((x, y) => x.eff - y.eff || x.dp - y.dp);
+
+  if (!rows.length){
+    $('#list').innerHTML = data.items.length || data.errors.length
+      ? '<div class="empty">Бліжэйшых цягнікоў па гэтых фільтрах няма.</div>'
+      : '<div class="empty">На табло зараз няма патрэбных цягнікоў.</div>';
+  } else {
+    $('#list').innerHTML = rows.map(x => card(x, base)).join('');
+  }
+
+  $('#notes').innerHTML = data.notes.length
+    ? `<details class="notes"><summary>Абвесткі на табло (${data.notes.length})</summary>${data.notes.map(n => `<p><b>${esc(ST[n.st].full)}</b>${esc(n.text)}</p>`).join('')}</details>`
+    : '';
+  updStamp();
+}
+
+function card(x, base){
+  const r = x.r;
+  const late = x.delay > 0;
+  const timeHtml = late
+    ? `<span class="time late">${esc(r.act)}</span><span class="time struck">${esc(r.plan)}</span><span class="delay">+${x.delay} хв</span>`
+    : `<span class="time">${esc(r.plan)}</span>`;
+  const fromTag = tab === 'home' ? `<span class="from">${esc(ST[x.from].short)}</span>` : '';
+  const lc = lineClass(r);
+  const train = `<div class="train">${r.line ? `<span class="line ${lc}">${esc(r.line)}</span>` : ''}<span class="num">${esc(r.number)}</span>${r.carrier ? `<span>· ${esc(r.carrier)}</span>` : ''}${r.extra.length ? `<span>· ${esc(r.extra.join(' · '))}</span>` : ''}</div>`;
+  const dest = `<div class="dest">→ <b>${esc(r.dest)}</b>${r.via ? `<div class="via">праз ${esc(r.via)}</div>` : ''}</div>`;
+  const arr = x.hits.map(h => {
+    const a = h.arr;
+    if (!a) return `<span><span class="tag">${esc(ST[h.to].short)}</span> <span class="m">· прыбыцця яшчэ няма на табло</span></span>`;
+    const ap = toMin(a.plan), aa = toMin(a.act);
+    const arrT = aa != null ? a.act : a.plan;
+    let ride = null;
+    const depEffAbs = (x.da != null ? x.da : x.dp);
+    let arrRel = rel(aa != null ? aa : ap, base);
+    if (arrRel != null){ if (arrRel < depEffAbs - 1) arrRel += 1440; ride = Math.round(arrRel - depEffAbs); }
+    const aLate = aa != null && ap != null && aa !== ap;
+    return `<span><span class="tag">${esc(ST[h.to].short)}</span> ${aLate ? `<b style="color:var(--late)">${esc(arrT)}</b> <s class="m">${esc(a.plan)}</s>` : `<b>${esc(arrT)}</b>`}${ride != null && ride >= 0 ? ` <span class="m">(${ride} хв)</span>` : ''}${a.plat ? ` <span class="m">· пл. ${esc(a.plat)}</span>` : ''}</span>`;
+  }).join('');
+  return `<div class="card${x.eff < 0 ? ' gone' : ''}">
+    <div class="row1">${fromTag}${timeHtml}${fmtIn(x.eff)}</div>
+    <div class="plat${r.plat ? '' : ' none'}"><small>пл.</small><span>${esc(r.plat || '–')}</span></div>
+    ${train}
+    ${dest}
+    <div class="arr"><span class="m">Прыбыццё:</span>${arr}</div>
+  </div>`;
+}
+
+function updStamp(){
+  const at = lastAt[tab];
+  if (!at){ $('#upd').textContent = '—'; return; }
+  const s = Math.round((Date.now() - at) / 1000);
+  const t = new Date(at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Prague' });
+  $('#upd').innerHTML = `абноўлена ${t}<br>${s < 60 ? s + ' с' : Math.floor(s / 60) + ' хв'} таму`;
+}
+
+async function refresh(force){
+  if (loading) return;
+  loading = true;
+  $('#refresh').classList.add('spin');
+  if (force) cache.clear();
+  const t = tab;
+  try {
+    const d = await collect(t);
+    lastData[t] = d; lastAt[t] = d.at;
+  } catch (e) {
+    lastData[t] = lastData[t] || { items: [], notes: [], errors: [e.message], at: Date.now() };
+  } finally {
+    loading = false;
+    $('#refresh').classList.remove('spin');
+    render();
+    if (t !== tab && !lastData[tab]) setTimeout(refresh, 0);   // таб пераключылі падчас загрузкі
+  }
+}
+
+// ===== Падзеі =====
+document.querySelector('.tabs').addEventListener('click', e => {
+  const b = e.target.closest('.tab'); if (!b) return;
+  tab = b.dataset.tab; render();
+  if (!lastAt[tab] || Date.now() - lastAt[tab] > 10000) refresh();
+});
+$('#chips').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  off[tab] = off[tab] || {};
+  off[tab][b.dataset.st] = !off[tab][b.dataset.st];
+  store.set('off', off); render();
+});
+$('#refresh').addEventListener('click', () => refresh(true));
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+setInterval(() => { if (!document.hidden) refresh(); }, REFRESH_MS);
+setInterval(() => { if (!document.hidden) render(); }, 15000);
+
+render();
+refresh();
+</script>
+</body>
+</html>
