@@ -133,7 +133,7 @@ footer a{color:var(--muted)}
   <div id="warn"></div>
   <div class="list" id="list"><div class="empty">Загружаю…</div></div>
   <div id="notes"></div>
-  <div class="rail" id="rail">
+  <div class="rail off" id="rail">
     <button class="rail-x" id="railX" aria-label="Схаваць цягнічок">×</button>
     <div class="track"></div>
     <div class="choo">
@@ -149,7 +149,7 @@ footer a{color:var(--muted)}
       </div>
     </div>
   </div>
-  <footer>Даныя: <a href="https://provoz.spravazeleznic.cz/tabule/" target="_blank" rel="noopener">табло Správy železnic</a> · абнаўляецца кожныя 30 с<br><button class="train-on" id="trainOn" hidden>паказаць цягнічок</button></footer>
+  <footer>Даныя: <a href="https://provoz.spravazeleznic.cz/tabule/" target="_blank" rel="noopener">табло Správy železnic</a> · абнаўляецца кожныя 30 с<br><button class="train-on" id="trainOn">паказаць цягнічок</button></footer>
 </div>
 
 <script>
@@ -440,10 +440,15 @@ setInterval(() => { if (!document.hidden) refresh(); }, REFRESH_MS);
 setInterval(() => { if (!document.hidden) render(); }, 15000);
 
 // цягнічок: схаваць / паказаць
-function setTrain(on){ $('#rail').classList.toggle('off', !on); $('#trainOn').hidden = on; store.set('train', on); }
+// стан захоўваецца ў cookie (на 10 гадоў); па змаўчанні цягнічок згорнуты
+const trainCookie = {
+  get(){ try { const m = document.cookie.match(/(?:^|;\s*)cyh_train=(1|0)/); return m ? m[1] === '1' : null; } catch(e){ return null; } },
+  set(on){ try { document.cookie = 'cyh_train=' + (on ? 1 : 0) + '; max-age=315360000; path=/; SameSite=Lax'; } catch(e){} },
+};
+function setTrain(on){ $('#rail').classList.toggle('off', !on); $('#trainOn').hidden = on; trainCookie.set(on); }
 $('#railX').addEventListener('click', () => setTrain(false));
 $('#trainOn').addEventListener('click', () => setTrain(true));
-setTrain(store.get('train', true));
+setTrain(trainCookie.get() === true);
 
 render();
 refresh();
